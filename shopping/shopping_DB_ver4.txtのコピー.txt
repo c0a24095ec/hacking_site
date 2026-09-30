@@ -1,0 +1,138 @@
+DROP DATABASE IF EXISTS shopping;
+CREATE DATABASE shopping;
+USE shopping;
+
+CREATE TABLE Users (
+user_id INT AUTO_INCREMENT,
+mail_address VARCHAR(255) NOT NULL UNIQUE,
+hashed_password VARCHAR(255) NOT NULL,
+name VARCHAR(255) NOT NULL,
+address VARCHAR(255),
+credit VARCHAR(255),
+PRIMARY KEY (user_id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Sessions (
+session_id VARCHAR(64) NOT NULL,
+user_id INT NOT NULL,
+PRIMARY KEY (session_id),
+FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Items (
+item_id INT AUTO_INCREMENT,
+item_name VARCHAR(255) NOT NULL,
+price INT NOT NULL,
+genre VARCHAR(255) NOT NULL,
+description TEXT,
+image_path VARCHAR(255) NOT NULL UNIQUE,
+PRIMARY KEY (item_id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Orders (
+order_id INT AUTO_INCREMENT,
+user_id INT NOT NULL,
+item_id INT NOT NULL,
+quantity INT NOT NULL,
+order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (order_id),
+FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+FOREIGN KEY (item_id) REFERENCES Items(item_id) ON DELETE CASCADE
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Carts (
+user_id INT NOT NULL,
+item_id INT NOT NULL,
+quantity INT NOT NULL DEFAULT 1,
+PRIMARY KEY (user_id, item_id),
+FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+FOREIGN KEY (item_id) REFERENCES Items(item_id) ON DELETE CASCADE
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Reviews (
+review_id INT AUTO_INCREMENT,
+item_id INT NOT NULL,
+user_id INT NOT NULL,
+content TEXT,
+star INT CHECK (star BETWEEN 1 AND 5),
+PRIMARY KEY (review_id),
+FOREIGN KEY (item_id) REFERENCES Items(item_id) ON DELETE CASCADE,
+FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO Users (mail_address, hashed_password, name, address, credit) VALUES 
+('kenji.sato@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', '佐藤 健司', '東京都渋谷区神南1-2-3 ルミエール渋谷 201', '4502-1234-5678-9012'),
+('mika.ito@example.com', 'c6d669ec39e76384a5a54fcce02ccffda2d92131238eb157db6b63d91b8dff2f', '伊藤 美香', '神奈川県横浜市西区みなとみらい2-3-1', '3528-9876-5432-1098'),
+('yuta.takahashi@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '高橋 優太', '大阪府大阪市北区梅田3-1-3', '5412-1111-2222-3333'),
+('ai.watanabe@example.com', '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08', '渡辺 愛', '愛知県名古屋市中区栄3-5-1', '4502-4444-5555-6666'),
+('sho.nakamura@example.com', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', '中村 翔', '福岡県福岡市中央区天神1-8-1', '3528-7777-8888-9999'),
+('yui.kobayashi@example.com', 'b3a8e0e1f9ab1b53cb1c9a6b107024ce508e73456e7195825b5974720e6f3661', '小林 結衣', '北海道札幌市中央区北5条西2丁目', '5412-0000-1111-2222'),
+('daiki.kato@example.com', '1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014', '加藤 大樹', '京都府京都市下京区烏丸通塩小路下ル', '4502-3333-4444-5555'),
+('sakura.yoshida@example.com', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', '吉田 さくら', '兵庫県神戸市中央区波止場町5-6', '3528-6666-7777-8888'),
+('ryota.yamada@example.com', 'a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e', '山田 涼太', '宮城県仙台市青葉区中央1-1-1', '5412-9999-0000-1111'),
+('hana.sasaki@example.com', '2c79a528f80457d76f092e02b740523ed6ee0e2418e2ddb7c4568e6f1a8ef153', '佐々木 華', '広島県広島市中区基町6-27', '4502-2222-3333-4444');
+
+INSERT INTO Sessions (session_id, user_id) VALUES 
+('hFk9Pq2WvZs8BxNc7Lj4Rt1My5Gg0Vd3Hb6KjPn9Xm2Cq1Za8Df5Jt4Wr7Sc0Lp3', 1),
+('m7Nz8Bv2Xq5Pj9Wt4Lk1Hc6Df3Rg0Sy5Vb4Mn2Jk7Pq9Wx1Zs8Cr5Fh3Dt6Lg0Yc', 2),
+('q9Pj4Wt1Lk7Hc6Df5Rg0Sy3Vb8Mn2Jk6Pq2Wx8Zs5Cr1Fh9Dt4Lg3Yc7Nz0Bv5Xm', 4),
+('Vb4Mn8Jk6Pq2Wx1Zs7Cr5Fh9Dt3Lg0Yc2Nz8Bv5Xm7Pj4Wt1Lk9Hc6Df3Rg0Sy5T', 7),
+('x1Zs8Cr5Fh3Dt6Lg0Yc7Nz8Bv2Xm5Pj9Wt4Lk1Hc6Df3Rg0Sy5Vb4Mn2Jk7Pq9Wp', 10);
+
+INSERT INTO Items (item_name, price, genre, description, image_path) VALUES 
+('ぬいぐるみ', 3000, 'おもちゃ', 'ふわふわ触り心地抜群かわいいぬいぐるみ', './images/lumi_nui.png'),
+('水筒', 2000 , 'キッチン', '保温・保冷どっちもできる洗いやすい水筒', './images/lumi_sui.png'), 
+('キーホルダー', 1500 , 'おもちゃ', '振り回してもちぎれない！お子様も安心！', './images/lumi_suto.png'), 
+('キーホルダー(ミミ)', 1500, 'おもちゃ', '振り回してもちぎれない！お子様も安心！', './images/mimi_suto.png'), 
+('水筒(くらげ)', 2000 , 'キッチン', 'くらげちゃんが描かれた可愛い♪水筒！', './images/jelly_bottle.png'), 
+('キーホルダー(くらげ)', 1700 , 'おもちゃ', 'おっきいマスコットで鍵を見つけるときに安心！', './images/jelly_strap.png'), 
+('ぬいぐるみ(くらげ)', 1600 , 'おもちゃ', 'ふわふわ×サラサラ素材のぬいぐるみ', './images/jelly_doll.png'), 
+('ペンケース1', 1500 , '文房具', '大容量！たくさん入るペンケース', './images/lumi_hude.png'), 
+('シール', 500 , 'おもちゃ', 'ぷくぷく素材の立体シール♪さわり心地も楽しんでね！', './images/si-ru.png'), 
+('ペンケース(くらげ)', 1500 , '文房具', 'くらげちゃんが描かれた透明感あふれるペンケース！', './images/jelly_pencase.png');
+
+INSERT INTO Orders (user_id, item_id, quantity, order_date) VALUES 
+(1, 1, 1, '2026-05-12 10:23:45'),
+(1, 9, 2, '2026-05-12 10:23:45'),
+(2, 5, 1, '2026-05-15 14:05:12'),
+(2, 6, 1, '2026-05-15 14:05:12'),
+(3, 8, 1, '2026-06-01 09:30:00'),
+(4, 2, 2, '2026-06-10 18:45:33'),
+(4, 3, 2, '2026-06-10 18:45:33'),
+(5, 7, 1, '2026-06-12 21:10:05'),
+(6, 10, 1, '2026-06-20 11:55:20'),
+(6, 9, 3, '2026-06-20 11:55:20'),
+(7, 4, 1, '2026-07-01 15:22:40'),
+(8, 1, 1, '2026-07-05 13:10:15'),
+(8, 5, 1, '2026-07-05 13:10:15'),
+(8, 8, 1, '2026-07-05 13:10:15'),
+(9, 2, 1, '2026-07-10 08:05:50'),
+(10, 7, 1, '2026-07-15 22:30:10'),
+(10, 6, 1, '2026-07-15 22:30:10'),
+(1, 10, 1, '2026-07-20 12:00:00');
+
+INSERT INTO Carts (user_id, item_id, quantity) VALUES 
+(1, 5, 1),
+(2, 1, 1),
+(2, 4, 2),
+(3, 9, 5),
+(5, 2, 1),
+(5, 8, 1),
+(7, 7, 1),
+(9, 10, 1);
+
+INSERT INTO Reviews (item_id, user_id, content, star) VALUES 
+(1, 1, '子供の誕生日プレゼントに購入しました。本当にふわふわで、子供もずっと抱きしめています！買ってよかったです。', 5),
+(9, 1, '手帳のデコレーション用に。ぷくぷく感がたまらなく可愛くて癒やされます。もっと色んな柄を出してほしいです。', 4),
+(5, 2, 'くらげのデザインに惹かれて購入しました。職場でも「可愛い水筒だね」と褒められます！ただ、少し重いので星4で。', 4),
+(6, 2, '大きいのでカバンの中で鍵が迷子になりません。手触りもいい感じです。', 5),
+(8, 3, '大容量でハサミやのりも余裕で入ります！ただ、最初は少しチャックが硬い気がしました。使っていくうちに馴染むといいな。', 3),
+(2, 4, '兄弟でお揃いで2つ買いました。パッキンが外しやすくて毎日のお手入れが本当に楽です！', 5),
+(3, 4, '幼稚園のリュックにつけています。振り回しても本当にちぎれる気配がありません（笑）親としても安心です。', 5),
+(7, 5, 'サラサラしていて触り心地が最高。ベッドに置いて一緒に寝ています。癒やし効果抜群です。', 5),
+(10, 6, '透明なので中身がパッと見て分かるのがすごく便利！くらげ柄も涼しげでお気に入りです。', 5),
+(9, 6, 'シール自体は可愛いですが、粘着力が少し弱いかも？ノートの表紙に貼ったら端っこが浮いてきちゃいました。', 3),
+(4, 7, 'ミミちゃんのデザインがとってもキュート！友達とお揃いで買いました。', 5),
+(1, 8, '想像していたより少し小さめでしたが、可愛さは大満足です。デスクの上に飾っています。', 4),
+(2, 9, '保温力が高くて、朝入れた熱いコーヒーが夕方まで温かいです。このお値段ならコスパ最強だと思います。', 5),
+(7, 10, 'くらげグッズを集めているので即買いしました！手触りがクセになります。', 5);
